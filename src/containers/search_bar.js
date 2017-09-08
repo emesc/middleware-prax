@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { fetchWeather } from '../actions/index'
 
-export default class SearchBar extends Component {
+class SearchBar extends Component {
 	constructor(props) {
 		super(props)
 
@@ -8,6 +11,7 @@ export default class SearchBar extends Component {
 
 		// take the existing function, bind it to 'this' and replace the existing function with it
 		this.onInputChange = this.onInputChange.bind(this)
+		this.onFormSubmit = this.onFormSubmit.bind(this)
 	}
 
 	onInputChange(event) {
@@ -16,8 +20,10 @@ export default class SearchBar extends Component {
 
 	onFormSubmit(event) {
 		event.preventDefault()
-
-		// go and fetch weather data
+		// go and fetch weather data, pass in the city as an arg
+		this.props.fetchWeather(this.state.terms)
+		// clear the search input
+		this.setState({ term: '' })
 	}
 
 	render() {
@@ -38,3 +44,13 @@ export default class SearchBar extends Component {
 		)
 	}
 }
+
+// goal is to hook up the ActionCreator FetchWeather to our SearchBar container
+function mapDispatchToProps(dispatch) {
+	// bind ActionCreator fetchWeather to dispatch
+	return bindActionCreators({ fetchWeather }, dispatch)
+}
+
+// mapDispatchToProps is always the 2nd argument to connect
+// will give us access to this.props.fetchWeather in our component SearchBar
+export default connect(null, mapDispatchToProps)(SearchBar)
